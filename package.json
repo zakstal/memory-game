@@ -1,0 +1,31 @@
+{
+  "name": "memory_game",
+  "version": "1.0.0",
+  "description": "Classic memory game implamented with css 3d transforms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git remote add origin https://github.com/zakstal/memory-game.git"
+  },
+  "keywords": [
+    "memory-game",
+    "css",
+    "javascript",
+    "transform3d"
+  ],
+  "author": "Zachary Stallings",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-jade": "^1.1.0",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-size": "~1.2.1",
+    "gulp-sourcemaps": "~1.5.0",
+    "gulp-uglify": "^1.2.0",
+    "gulp-util": "~3.0.4",
+    "gulp-concat": "~2.5.2"
+  }
+}
