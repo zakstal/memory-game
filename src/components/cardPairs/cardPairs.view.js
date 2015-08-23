@@ -2,6 +2,12 @@
 	'use strict';
 
 	mg.views.cardPairs = Backbone.View.extend({
+
+		/**
+		* This view tracks cards with the same gifs and has no element
+		* on the page
+		*/
+
 		/**
 		*
 		*/

@@ -4,6 +4,19 @@
 	mg.collections.cards = Backbone.Collection.extend({
 
 		/**
+		* Function: the url can only accept one query at a time and so
+		* needs to to mulitple requests if multiple terms are given.
+		*
+		* For this to work there needs to be a collection in side where models
+		* are saved on each request. this collection is the cards collection
+		*
+		* the giffy url will return by default 25 gifs. the parse functioni attemps
+		* to randomize the gifs so on the same term you can have new gifs.
+		*
+		* For more info on the gif end point: https://github.com/giphy/GiphyAPI
+		*/
+
+		/**
 		*
 		*/
 		url: function (searchTerm) {

@@ -1,0 +1,6 @@
+todo:
+  create a game model that can track who’s turn it is and how many points
+  card can be double clicked right now and it will register as two open cards
+  number of cards variable on all views needs to be passed in from main view
+  cards to be randomized
+  add info on trigger events on card paris and cards views

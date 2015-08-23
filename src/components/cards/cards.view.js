@@ -4,7 +4,14 @@
 	mg.views.cards = Backbone.View.extend({
 
 		/**
+		* this collection has a cards collection that contains all of the cards
+		* use this.collection.cards to listen events. see cards.collection.js for
+		* more info.
 		*
+		* triggerEvents: 
+		* 'change:show-card' counts open cards and sends 'chage:close-cards' to all child views
+		* 'chage:close-cards' tiggers a hide card event on the card view and resets card open
+		* count on this view and cardPairs view
 		*/
 		initialize: function (opt) {
 			this.template = wn.JST['components/cards/cards'];
