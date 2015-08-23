@@ -9,10 +9,12 @@
 		initialize: function (opt) {
 			this.template = wn.JST['components/cards/cards'];
 
-			this.collection = new mg.collections.cards({searchTerms: ['dogs', 'cats'], numberOfCards: 8});
+			this.collection = new mg.collections.cards({searchTerms: ['dogs'], numberOfCards: 6});
 
 			this.listenTo(this.collection, 'sync', this.success);
+			this.listenTo(this.collection.cards, 'change:show-card', this.countOpenCards);
 			this.collection.fetchGifs();
+			this.numberOfCardDubs = 2;
 
 			console.log('collection', this.collection);
 		},
@@ -39,7 +41,7 @@
 		*
 		*/
 		renderCard: function (card) {
-			return new mg.views.card({
+			return new mg.views.cardPairs({
 				container: this.$cardsContainer,
 				model: card
 			})
@@ -48,9 +50,23 @@
 		/**
 		*
 		*/
+		countOpenCards: function () {
+			this.openCards = this.openCards || 0;
+			this.openCards++;
+			var _this = this;
+			if (this.numberOfCardDubs === this.openCards) {
+				setTimeout(function () {
+					_this.collection.cards.trigger('chage:close-cards');
+					_this.openCards = 0;
+				}, 2000);
+			}
+		},
+
+		/**
+		*
+		*/
 		success: function () {
 			this.render();
-			console.log('collection from cards', this.collection);
 		}
 	});
 }(mg, window));

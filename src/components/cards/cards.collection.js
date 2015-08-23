@@ -24,8 +24,6 @@
 			this.setSearchLimit();
 			this.setSearchTerms();
 			this.trimSearchTerms();
-
-			console.log('in gif collection', opt);
 		},
 
 		/**
@@ -39,7 +37,6 @@
 		* Fetches a single search term
 		*/
 		fetchTerm: function (searchTerm) {
-			console.log('search term', searchTerm);
 			this.searchObject.q = searchTerm;
 			this.fetch({
 				data: this.searchObject
@@ -91,19 +88,14 @@
 		* Sets models from response to cards collection
 		*/
 		setModels: function (model) {
-			console.log('set models', model);
-			var model;
-			for (var i = 0; i < 2; i++) {
-				model = new Backbone.Model(model);
-				this.cards.add(model);
-			}
+			var model = new mg.models.card(model);
+			this.cards.add(model);
 		},
 
 		/**
 		*
 		*/
 		parse: function (res) {
-			console.log('in parse', res);
 			var model;
 			for (var i = 0; i < this.limit; i++) {
 				model = this.getRandRes(res);

@@ -1,9 +1,10 @@
 .container
 	.cube
+		<% console.log('gif url', gifUrl) %>
 		.figure.top.top-bottom
 		.figure.bottom.top-bottom
 		.figure.left.left-right
 		.figure.right.left-right
 		.figure.front.faces
 		.figure.back.faces
-img(src="https://giphy.com/embed/YlkgUp6r9YUs8", data-view="test")
+			img(src!="<%= gifUrl %>", data-view="test")

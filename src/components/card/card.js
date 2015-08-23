@@ -6,7 +6,7 @@
 		className: 'card',
 
 		events: {
-			'click .cube': 'flipCard'
+			'click .cube': 'flipCardShow'
 		},
 
 		/**
@@ -14,8 +14,11 @@
 		*/
 		initialize: function (opt) {
 			this.$container = opt.container;
-			console.log('card model', this.model);
 			this.template = JST['components/card/card']
+			this.isHidden = false;
+
+			this.listenTo(this.model, 'change:hide-cards', this.hideCards);
+			this.listenTo(this.model.collection, 'chage:close-cards', this.closeCard);
 			this.render();
 		},
 
@@ -23,22 +26,38 @@
 		*
 		*/
 		render: function () {
-			console.log('in card render');
+			console.log('mode', this.model);
 			this.$el.html(this.template({
-				model: this.model.get('embed_url')
+				gifUrl: this.model.gifSource()
 			}));
-			this.$image = this.$('img');
-			this.$image.attr('src', this.model.get('embed_url'));
 			this.$container.append(this.$el);
-			console.log('image', this.$image.attr('data-view'));
+			this.$cube = this.$('.cube');
 		},
 
 		/**
 		*
 		*/
-		flipCard: function (e) {
-			console.log('flip');
-			$(e.currentTarget).toggleClass('rotate');
+		flipCardShow: function (e) {
+			if (!this.isHidden) {
+				$(e.currentTarget).addClass('rotate');
+				this.model.trigger('change:show-card');
+			}
+		},
+
+		/**
+		*
+		*/
+		closeCard: function () {
+			this.$cube.removeClass('rotate');
+		},
+
+		/**
+		*
+		*/
+		hideCards: function () {
+			this.$el.addClass('hide');
+			this.isHidden = true;
 		}
+
 	});
 }(mg, window));

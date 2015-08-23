@@ -16,7 +16,7 @@ var JST = window.JST;
 		className: 'card',
 
 		events: {
-			'click .cube': 'flipCard'
+			'click .cube': 'flipCardShow'
 		},
 
 		/**
@@ -24,8 +24,11 @@ var JST = window.JST;
 		*/
 		initialize: function (opt) {
 			this.$container = opt.container;
-			console.log('card model', this.model);
 			this.template = JST['components/card/card']
+			this.isHidden = false;
+
+			this.listenTo(this.model, 'change:hide-cards', this.hideCards);
+			this.listenTo(this.model.collection, 'chage:close-cards', this.closeCard);
 			this.render();
 		},
 
@@ -33,25 +36,98 @@ var JST = window.JST;
 		*
 		*/
 		render: function () {
-			console.log('in card render');
+			console.log('mode', this.model);
 			this.$el.html(this.template({
-				model: this.model.get('embed_url')
+				gifUrl: this.model.gifSource()
 			}));
-			this.$image = this.$('img');
-			this.$image.attr('src', this.model.get('embed_url'));
 			this.$container.append(this.$el);
-			console.log('image', this.$image.attr('data-view'));
+			this.$cube = this.$('.cube');
 		},
 
 		/**
 		*
 		*/
-		flipCard: function (e) {
-			console.log('flip');
-			$(e.currentTarget).toggleClass('rotate');
+		flipCardShow: function (e) {
+			if (!this.isHidden) {
+				$(e.currentTarget).addClass('rotate');
+				this.model.trigger('change:show-card');
+			}
+		},
+
+		/**
+		*
+		*/
+		closeCard: function () {
+			this.$cube.removeClass('rotate');
+		},
+
+		/**
+		*
+		*/
+		hideCards: function () {
+			this.$el.addClass('hide');
+			this.isHidden = true;
 		}
+
 	});
 }(mg, window));
+(function (mg) {
+	'use strict';
+
+	mg.views.cardPairs = Backbone.View.extend({
+		/**
+		*
+		*/
+		initialize: function (opt) {
+			this.$container = opt.container
+
+			//TODO: this number of cards should be passed in as an option
+			this.numberOfCards = 2;
+			this.listenTo(this.model, 'change:show-card', this.countOpenCards);
+			this.listenTo(this.model.collection, 'chage:close-cards', this.resteOpenCount);
+			this.render();
+		},
+
+		/**
+		*
+		*/
+		render: function () {
+			this.renderCards();
+		},
+
+		/**
+		*
+		*/
+		renderCards: function () {
+			for (var i = 0; i < this.numberOfCards; i++) {
+				new mg.views.card({
+					container: this.$container,
+					model: this.model
+				})
+			}
+		},
+
+		/**
+		*
+		*/
+		countOpenCards: function () {
+			this.numberOpen = this.numberOpen || 0;
+			this.numberOpen++;
+			if (this.numberOpen === this.numberOfCards) {
+				this.model.trigger('change:hide-cards');
+			}
+		},
+
+		/**
+		*
+		*/
+		resteOpenCount: function () {
+			this.numberOpen = 0;
+		},
+
+
+	});
+}(mg));
 (function (mg) {
 	'use strict';
 
@@ -78,8 +154,6 @@ var JST = window.JST;
 			this.setSearchLimit();
 			this.setSearchTerms();
 			this.trimSearchTerms();
-
-			console.log('in gif collection', opt);
 		},
 
 		/**
@@ -93,7 +167,6 @@ var JST = window.JST;
 		* Fetches a single search term
 		*/
 		fetchTerm: function (searchTerm) {
-			console.log('search term', searchTerm);
 			this.searchObject.q = searchTerm;
 			this.fetch({
 				data: this.searchObject
@@ -145,24 +218,48 @@ var JST = window.JST;
 		* Sets models from response to cards collection
 		*/
 		setModels: function (model) {
-			console.log('set models', model);
-			var model;
-			for (var i = 0; i < 2; i++) {
-				model = new Backbone.Model(model);
-				this.cards.add(model);
-			}
+			var model = new mg.models.card(model);
+			this.cards.add(model);
 		},
 
 		/**
 		*
 		*/
 		parse: function (res) {
-			console.log('in parse', res);
 			var model;
 			for (var i = 0; i < this.limit; i++) {
 				model = this.getRandRes(res);
 				this.setModels(model);
 			}
+		}
+	});
+}(mg));
+(function (mg) {
+	'use strict';
+
+	mg.models.card = Backbone.Model.extend({
+
+		/**
+		*
+		*/
+		initialize: function () {
+			console.log('in card model');
+			this.changeId();
+		},
+
+		/**
+		*
+		*/
+		gifSource: function () {
+			return 'https://media.giphy.com/media/' + this.gifId + '/giphy.gif';
+		},
+
+		/**
+		*
+		*/
+		changeId: function () {
+			this.gifId = this.id;
+			this.id = Math.random().toString(36).substring(7);
 		}
 	});
 }(mg));
@@ -177,10 +274,12 @@ var JST = window.JST;
 		initialize: function (opt) {
 			this.template = wn.JST['components/cards/cards'];
 
-			this.collection = new mg.collections.cards({searchTerms: ['dogs', 'cats'], numberOfCards: 8});
+			this.collection = new mg.collections.cards({searchTerms: ['dogs'], numberOfCards: 6});
 
 			this.listenTo(this.collection, 'sync', this.success);
+			this.listenTo(this.collection.cards, 'change:show-card', this.countOpenCards);
 			this.collection.fetchGifs();
+			this.numberOfCardDubs = 2;
 
 			console.log('collection', this.collection);
 		},
@@ -207,7 +306,7 @@ var JST = window.JST;
 		*
 		*/
 		renderCard: function (card) {
-			return new mg.views.card({
+			return new mg.views.cardPairs({
 				container: this.$cardsContainer,
 				model: card
 			})
@@ -216,9 +315,23 @@ var JST = window.JST;
 		/**
 		*
 		*/
+		countOpenCards: function () {
+			this.openCards = this.openCards || 0;
+			this.openCards++;
+			var _this = this;
+			if (this.numberOfCardDubs === this.openCards) {
+				setTimeout(function () {
+					_this.collection.cards.trigger('chage:close-cards');
+					_this.openCards = 0;
+				}, 2000);
+			}
+		},
+
+		/**
+		*
+		*/
 		success: function () {
 			this.render();
-			console.log('collection from cards', this.collection);
 		}
 	});
 }(mg, window));

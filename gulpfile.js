@@ -75,9 +75,9 @@ gulp.task('templates', function() {
     .pipe(jade({
         pretty: true
     }))
-    .pipe(ejs({
-        msg: "Hello Gulp!"
-    }).on('error', onError))
+    // .pipe(ejs({
+    //     msg: "Hello Gulp!"
+    // }).on('error', onError))
     .pipe(jstConcat('jst.js', {
       renameKeys: ['^.*src/(.*).html$', '$1']
     }))
