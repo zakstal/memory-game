@@ -1,0 +1,85 @@
+.card {
+	display: inline-block;
+
+	.container {
+		@base: 300px;
+	  width: @base;
+	  height: @base;
+	  position: relative;
+	  perspective: 1000px;
+	  padding: 20px;
+
+	  .cube {
+		  width: @base * .8;
+			height: @base * .98;
+		  position: absolute;
+		  transform-style: preserve-3d;
+		  transition: all 1s;
+		  //transform: rotateY(272deg) rotateX(40deg) rotate(10deg);
+
+		  &.rotate {
+		  	transform: rotateY(180deg);
+		  }
+
+	   	.figure {
+			  margin: 0;
+			  
+			  
+			  display: block;
+			  position: absolute;
+			  border: 2px solid black; 
+
+			}
+		}
+
+		img {
+			height: 100%;
+			width: 100%;
+		}
+	 
+		.faces {
+			width: @base * .8;
+			height: @base * .98;
+		}
+
+		.left-right {
+			width: @base * .2;
+			height: @base * .98;
+		}
+
+		.top-bottom {
+			height: @base * .2;
+			width: @base * .8;
+		}
+
+		.front  { 
+	  	background: red;
+	  	opacity: 0.3;
+			transform: rotateY(   0deg ) translateZ( @base * .09 ); 
+		} 
+
+		.back   { 
+			background: red;
+			transform: rotateX( 180deg ) translateZ( @base * .11 ); 
+		}
+
+		.right  { 
+			background: blue;
+			transform: rotateY(  90deg ) translateZ( @base * .705 ); 
+		}
+
+		.left   { 
+			transform: rotateY( -90deg ) translateZ( @base * .11 ); 
+		}
+
+		.top    { 
+			background: yellow;
+			transform: rotateX(  90deg ) translateZ( @base * .1 ); 
+		}
+
+		.bottom { 
+			transform: rotateX( -90deg ) translateZ( @base * .88 ); 
+		}
+
+	}
+}

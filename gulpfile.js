@@ -9,6 +9,7 @@ var ejs = require("gulp-ejs");
 var jstConcat = require('gulp-jst-concat')
 var reload = browserSync.reload;
 var $ = require('gulp-load-plugins')();
+var less = require('gulp-less')
 
 var AUTOPREFIXER_BROWSERS = [
     'ie >= 9',
@@ -140,21 +141,24 @@ gulp.task('styles', function () {
     util.log(util.colors.bgGreen.bold('Compiling LESS --> CSS'));
 
     return gulp.src([
-        './src/components/**/*.less'
+        'src/**/*.less'
     ]).pipe($.plumber({
         errorHandler: onError
     }))
-        .pipe($.sourcemaps.init())
-        .pipe(gulp.dest('src/less'))
-        .pipe($.less())
-        .pipe($.autoprefixer({browsers: AUTOPREFIXER_BROWSERS}))
-        .pipe($.minifyCss())
-        .pipe($.wrapper({
-            footer: cssBanner
-        }))
-        .pipe($.sourcemaps.write('.'))
-        .pipe(gulp.dest('dest/css'))
-        .pipe($.size({title: 'styles'}));
+    .pipe($.sourcemaps.init())
+    .pipe($.concat('mg.css'))
+    .pipe(gulp.dest('dist/less'))
+    .pipe($.less({
+        errorHandler: onError
+    }))
+    .pipe($.autoprefixer({browsers: AUTOPREFIXER_BROWSERS}))
+    // .pipe($.minifyCss())
+    .pipe($.wrapper({
+        footer: cssBanner
+    }))
+    .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest('dist/css'))
+    .pipe($.size({title: 'styles'}));
 });
 
 gulp.task('watch', function () {
@@ -173,9 +177,10 @@ gulp.task('watch', function () {
             }
         });
 
-    gulp.watch('src/pages/index.jade',['default']);
-    gulp.watch('sourcemaps/**/*.js', ['default']);
-    gulp.watch('src/css/*.less', ['default']);
+    gulp.watch('src/**/index.jade',['index']);
+    gulp.watch('src/**/*.jade',['templates']);
+    gulp.watch('src/**/*.js', ['compress']);
+    gulp.watch('src/**/*.less', ['styles']);
 
     gulp.watch(['src/pages/index.jade', 'src/**/*.js', 'src/**/*.less'], reload);
 

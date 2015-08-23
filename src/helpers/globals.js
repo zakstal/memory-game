@@ -4,6 +4,6 @@ var globals = {};
 var mg = {};
 mg.views = {};
 mg.models = {};
-mg.collection = {};
+mg.collections = {};
 
 var JST = window.JST;

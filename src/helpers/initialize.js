@@ -1,7 +1,7 @@
 $(function () {
 	(function (mg) {
 		console.log('body', $('body'));
-		new mg.views.card({
+		new mg.views.cards({
 			el: $('body')
 		});
 	}(mg));
